@@ -1,0 +1,15 @@
+--- # Seperating blocks
+- name: Create nginx web server
+  hosts: instances 
+  become: true #root user
+  tasks: 
+  
+  - name: install nginx servers
+    dnf: 
+      name: nginx
+      state: latest
+      update_cache: true
+  - name: Start the nginx
+    service:
+      name: nginx
+      state: started
