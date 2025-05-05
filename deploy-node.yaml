@@ -11,16 +11,32 @@
         pkg:
           - nodejs
           - npm
+    - name: Create linux User
+      user:
+        name: nithin
+        comment: nithin Admin
+        group: ec2-user
 #Second play
 - name: Deploy nodejs app
   hosts: instances
+  become: True
+  become_user: nithin
   tasks:
-    - name: Copy nodejs folder into server
-      copy:
-        src: /home/nithin/folderForAnsible/folderforansible-1.0.0.tgz
-        dest: /home/ec2-user/node-app.tgz
     - name: Unpack the nodejs file
       unarchive:
-        src: /home/ec2-user/node-app.tgz
-        dest: /home/ec2-user
-        remote_src: yes
+        src: /home/nithin/folderForAnsible/folderforansible-1.0.0.tgz
+        dest: /home/nithin
+    - name: Install dependencies
+      npm:
+        path: /home/nithin/package
+    - name: Start the application
+      command: 
+        chdir: /home/nithin/package
+        cmd: node index.js 
+      async: 1000
+      poll: 0
+    - name: Ensure app is running
+      shell: ps aux | grep node
+      register: app_status
+    - name: debug
+      debug: msg={{app_status}}
