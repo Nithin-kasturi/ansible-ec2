@@ -1,0 +1,26 @@
+---
+# First play
+- name: Install node and npm
+  hosts: instances
+  become: true
+  tasks:
+    # - name: Update apt repo and cache
+    #   ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 force_apt_get=true
+    - name: Install nodejs and npm
+      dnf: 
+        pkg:
+          - nodejs
+          - npm
+#Second play
+- name: Deploy nodejs app
+  hosts: instances
+  tasks:
+    - name: Copy nodejs folder into server
+      copy:
+        src: /home/nithin/folderForAnsible/folderforansible-1.0.0.tgz
+        dest: /home/ec2-user/node-app.tgz
+    - name: Unpack the nodejs file
+      unarchive:
+        src: /home/ec2-user/node-app.tgz
+        dest: /home/ec2-user
+        remote_src: yes
