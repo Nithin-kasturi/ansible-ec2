@@ -3,6 +3,8 @@
 - name: Install node and npm
   hosts: instances
   become: true
+  vars_files: 
+    - project-vars
   tasks:
     # - name: Update apt repo and cache
     #   ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 force_apt_get=true
@@ -19,19 +21,21 @@
 #Second play
 - name: Deploy nodejs app
   hosts: instances
+  vars_files: 
+    - project-vars
   become: True
   become_user: nithin
   tasks:
     - name: Unpack the nodejs file
       unarchive:
-        src: /home/nithin/folderForAnsible/folderforansible-1.0.0.tgz
-        dest: /home/nithin
+        src: "{{source}}"
+        dest: "{{destination}}"
     - name: Install dependencies
       npm:
-        path: /home/nithin/package
+        path: "{{destination}}/package"
     - name: Start the application
       command: 
-        chdir: /home/nithin/package
+        chdir: "{{destination}}/package"
         cmd: node index.js 
       async: 1000
       poll: 0
